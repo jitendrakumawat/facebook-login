@@ -1,0 +1,5 @@
+2016-11-26 14:01:04,111 [INFO] from application in ForkJoinPool-1-worker-1 - ApplicationTimer demo: Starting application at 2016-11-26T08:31:04.110Z
+2016-11-26 14:01:04,314 [INFO] from play.api.Play in ForkJoinPool-1-worker-1 - Application started (Dev)
+2016-11-26 14:06:46,416 [INFO] from application in application-akka.actor.default-dispatcher-9 - ApplicationTimer demo: Stopping application at 2016-11-26T08:36:46.416Z after 342s.
+2016-11-26 14:06:46,512 [INFO] from application in application-akka.actor.default-dispatcher-9 - ApplicationTimer demo: Starting application at 2016-11-26T08:36:46.512Z
+2016-11-26 14:06:46,578 [INFO] from play.api.Play in application-akka.actor.default-dispatcher-9 - Application started (Dev)

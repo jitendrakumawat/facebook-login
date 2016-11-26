@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="login">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-cookies.min.js"></script>
+
+    <title>Si2chip Home</title>
+</head>
+<body >
+<div class="container">
+   
+  <div ng-view></div>
+  <div ng-controller="loginCtrl">
+  {{name}}
+  <button ng-click="fblogin()">facebook login</button>
+  </div>
+  </div>
+<script>
+        //todo: progress indicator
+
+        var app = angular.module('login',  ['ngRoute']);
+            window.fbAsyncInit = function() {
+                FB.init({
+                  appId      : '969339029839051',
+                  xfbml      : false,
+                  version    : 'v2.8'
+                });
+                FB.AppEvents.logPageView();
+              };
+
+              (function(d, s, id){
+                 var js, fjs = d.getElementsByTagName(s)[0];
+                 if (d.getElementById(id)) {return;}
+                 js = d.createElement(s); js.id = id;
+                 js.src = "//connect.facebook.net/en_US/sdk.js";
+                 fjs.parentNode.insertBefore(js, fjs);
+               }(document, 'script', 'facebook-jssdk'));
+
+
+                app.config(['$routeProvider', '$locationProvider',function AppConfig($routeProvider,$locationProvider) {
+                    $routeProvider
+                    .when("/",{
+                        templateUrl: "index.scala.html",
+                        controller: "loginCtrl"
+                    })
+                     .when("/dashboard",{
+                        templateUrl: "dashboard.scala.html",
+                        controller: "dashBoardCtrl",
+                        authentacted : true
+                    })
+                       .otherwise({
+                        redirectTo :"main.scala.html"
+                       });
+
+                       $locationProvider.html5Mode({enabled: true, requireBase: false}).hashPrefix('*');
+                }]);
+
+              app.run(["$rootScope", "$location","AuthFact", function($rootScope, $location,AuthFact ){
+
+              $rootScope.$on("$routeChangeStart", function(event, next,current){
+     
+              console.log(next);
+              console.log(current);
+                
+                if(next.$$route.authenticated){
+                
+                  var userAuth= getAccessToken();
+                  if(!userAuth){
+                    $location.path("/");
+                  }
+                };
+             
+              console.log(event);
+              console.log(next);
+              console.log(current);
+              });
+             }]);
+
+
+            app.controller('loginCtrl',["$scope", "AuthFact","$location", function($scope,AuthFact,$location) {
+                $scope.name= "login please";
+                $scope.fblogin= function(){
+                    FB.login(function(response) {
+                        if (response.authResponse) {
+                         console.log('Welcome!  Fetching your information.... ');
+                         FB.api('/me', function(response) {
+                           console.log('Good to see you, ' + response.name + '.');
+                           console.log(response);
+                           var accessToken =FB.getAuthResponse().accessToken;
+                             console.log(accessToken);
+                             AuthFact.setAccessToken(accessToken);
+                             $location.path("/dashboard");
+                         });
+                        } else {
+                         console.log('User cancelled login or did not fully authorize.');
+                        }
+                    });
+                };
+            
+               
+            }]);
+             app.controller("dashBoardCtrl",["scope",function($scope){
+              
+                $scope.welcome="loadinn  dashboard";
+
+             }]);
+
+             app.factory("AuthFact",[ function(){
+              var Authfact={};
+                Authfact.setAccessToken= function(accessToken){
+                 Authfact.authToken = accessToken;
+                };
+
+              Authfact.getAccessToken=function(){
+
+                return Authfact.authToken;
+              };
+
+                  return Authfact;
+
+             }]);
+
+    </script>
+</body>
+</html>
